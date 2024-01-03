@@ -16,4 +16,3 @@ Set-MailboxAutoReplyConfiguration -Identity "user@example.com" -AutoReplyState E
 
 # Disconnect from Exchange Online
 Remove-PSSession $Session
-
