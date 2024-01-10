@@ -16,5 +16,5 @@ $user.msExchHideFromAddressLists = $true
 # Save the changes
 Set-ADUser -Instance $user
 
-
+Get-ADUser -Identity $DN -Properties msExchHideFromAddressLists
 
