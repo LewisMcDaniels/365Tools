@@ -23,7 +23,7 @@ $user.msExchHideFromAddressLists = $true
 # Check if the mailnickname attribute is empty
 if ([string]::IsNullOrEmpty($user.mailnickname)) {
     # Add the value of the user's UPN to the mailnickname attribute
-    $user.mailnickname = $upn
+    $user.mailnickname = $user.UserPrincipalName
 }
 
 # Save the changes
