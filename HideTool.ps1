@@ -31,6 +31,7 @@ Set-ADUser -Instance $user
 
 #Check Change is applied in AD.
 Get-ADUser -Identity $DN -Properties msExchHideFromAddressLists
+get-aduser -Identity $DN -Properties mailnickname
 
 # Sync the change to Office 365
 Start-ADSyncSyncCycle -PolicyType Delta
