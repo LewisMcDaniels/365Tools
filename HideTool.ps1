@@ -23,15 +23,26 @@ $user.msExchHideFromAddressLists = $true
 # Check if the mailnickname attribute is empty
 if ([string]::IsNullOrEmpty($user.mailnickname)) {
     # Add the value of the user's UPN to the mailnickname attribute
+    write-host "mailnickname attribute is empty, adding UPN to mailnickname attribute" -ForegroundColor Yellow
     $user.mailnickname = $user.UserPrincipalName
 }
 
 # Save the changes
 Set-ADUser -Instance $user
 
-#Check Change is applied in AD.
-Get-ADUser -Identity $DN -Properties msExchHideFromAddressLists
-get-aduser -Identity $DN -Properties mailnickname
+#Check changes are applied in AD.
+Write-Host "Checking changes are applied in AD" -ForegroundColor Yellow
+if ($User.msExchHideFromAddressLists -eq $true) {
+    Write-Host "Users hide from Exchange is True" -ForegroundColor Green
+} else {
+    Write-Host "Users hide from Exchange is False" -ForegroundColor Red
+}
+
+if ([string]::IsNullOrEmpty($user.mailnickname)) {
+    Write-Host "mailnickname attribute is empty" -ForegroundColor Red
+} else {
+    Write-Host "mailnickname attribute is not empty" -ForegroundColor Green
+}
 
 # Sync the change to Office 365
 Start-ADSyncSyncCycle -PolicyType Delta
@@ -49,9 +60,9 @@ Import-PSSession $Session -DisableNameChecking
 # Check if user is hidden from 365GAL
 $User = Get-Mailbox -Identity $upn
 if ($User.HiddenFromAddressListsEnabled) {
-    Write-Host "User is hidden from the GAL."
+    Write-Host "User is hidden from the GAL." -ForegroundColor Green
 } else {
-    Write-Host "User is not hidden from the GAL."
+    Write-Host "User is not hidden from the GAL." -ForegroundColor Red
 }
 
 # Disconnect from Office 365
