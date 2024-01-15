@@ -35,6 +35,9 @@ Get-ADUser -Identity $DN -Properties msExchHideFromAddressLists
 # Sync the change to Office 365
 Start-ADSyncSyncCycle -PolicyType Delta
 
+# Wait for 10 seconds
+Start-Sleep -Seconds 15
+
 # Check the change has been applied in 365 GAL
 
 # Connect to Office 365
