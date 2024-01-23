@@ -37,6 +37,11 @@ foreach ($row in $csvData) {
         write-host "$upn mailnickname attribute is empty, adding UPN to mailnickname attribute" -ForegroundColor Yellow
         $user.mailnickname = $user.UserPrincipalName
     }
+    else {
+        # Add the value of the user's UPN to the mailnickname attribute
+        write-host "$upn mailnickname attribute is not empty" -ForegroundColor Yellow
+        $user.mailnickname = $user.UserPrincipalName
+    }
 
     # Save the changes
     Set-ADUser -Instance $user
@@ -66,8 +71,13 @@ foreach ($row in $csvData) {
 write-host "Syncing the change to 365" -ForegroundColor White
 Start-ADSyncSyncCycle -PolicyType Delta
 
-# Wait for 60 seconds
-Start-Sleep -Seconds 60
+# Count the number of rows in the imported CSV
+$rowCount = $csvData.Count
+
+# Wait for the counted number of rows in seconds multiplied by 20
+Start-Sleep -Seconds ($rowCount * 20)
+
+$writeHostEntries = @() # Array to store Write-Host entries
 
 # Check if user is hidden from 365GAL
 write-host "Checking if user is hidden from the Exchange Online GAL" -ForegroundColor White
