@@ -1,0 +1,6 @@
+$Users = "C:\scripts\users.csv"
+Import-CSV $Users| ForEach-Object {Get-Mailbox -Identity $_.Users | Select-Object Alias,@{Name=”EmailAddresses”;Expression={$_.EmailAddresses |Where-Object {$_ -LIKE “SMTP:*”}}}} | Format-List
+
+
+
+
