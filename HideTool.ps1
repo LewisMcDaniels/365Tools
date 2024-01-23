@@ -33,9 +33,9 @@ Set-ADUser -Instance $user
 #Check changes are applied in AD.
 Write-Host "Checking changes are applied in AD" -ForegroundColor Yellow
 if ($User.msExchHideFromAddressLists -eq $true) {
-    Write-Host "Users hide from Exchange is True" -ForegroundColor Green
+    Write-Host "Users hide from Exchange attribute is True in Active Directory" -ForegroundColor Green
 } else {
-    Write-Host "Users hide from Exchange is False" -ForegroundColor Red
+    Write-Host "Users hide from Exchange is False in Active" -ForegroundColor Red
 }
 
 if ([string]::IsNullOrEmpty($user.mailnickname)) {
@@ -53,9 +53,8 @@ Start-Sleep -Seconds 15
 # Check the change has been applied in 365 GAL
 
 # Connect to Office 365
-$Credential = Get-Credential
-$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credential -Authentication Basic -AllowRedirection
-Import-PSSession $Session -DisableNameChecking
+Import-Module ExchangeOnlineManagement
+Connect-ExchangeOnline
 
 # Check if user is hidden from 365GAL
 $User = Get-Mailbox -Identity $upn
@@ -66,4 +65,4 @@ if ($User.HiddenFromAddressListsEnabled) {
 }
 
 # Disconnect from Office 365
-Remove-PSSession $Session
+Disconnect-ExchangeOnline -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
