@@ -13,13 +13,13 @@ Import-Module ExchangeOnlineManagement
 Connect-ExchangeOnline
 
 # Get the user's distinguished name (DN)
-$upns = Read-Host "Enter the user's UPNs (separated by comma)" # Prompt the user to enter the user's UPNs
-
-$upnList = $upns -split ',' # Split the input into an array of UPNs
+$csvPath = Read-Host "Enter the path to the CSV file" # Prompt the user to enter the path to the CSV file
+$csvData = Import-Csv -Path "$csvPath" # Import the CSV file
 
 $writeHostEntries = @() # Array to store Write-Host entries
 
-foreach ($upn in $upnList) { 
+foreach ($row in $csvData) { 
+    $upn = $row.UPN # Get the UPN from the CSV row
     Write-Host "Processing user: $upn" -ForegroundColor White 
     # Get the user's distinguished name (DN)
     $user = Get-ADUser -Filter {UserPrincipalName -eq $upn} -Properties DistinguishedName
@@ -59,15 +59,22 @@ foreach ($upn in $upnList) {
         $writeHostEntries += "$upn mailnickname attribute is not empty"
     }
 
-    # Sync the change to Office 365
-    Start-ADSyncSyncCycle -PolicyType Delta
+    
+}
 
-    # Wait for 10 seconds
-    Start-Sleep -Seconds 15
+# Sync the change to Office 365
+write-host "Syncing the change to 365" -ForegroundColor White
+Start-ADSyncSyncCycle -PolicyType Delta
 
-    # Check if user is hidden from 365GAL
-    $User = Get-Mailbox -Identity $upn
-    if ($User.HiddenFromAddressListsEnabled) {
+# Wait for 60 seconds
+Start-Sleep -Seconds 60
+
+# Check if user is hidden from 365GAL
+write-host "Checking if user is hidden from the Exchange Online GAL" -ForegroundColor White
+foreach ($row in $csvData) { 
+    $upn = $row.UPN
+    $user = Get-Mailbox -Identity $upn
+    if ($user.HiddenFromAddressListsEnabled) {
         Write-Host "$UPN is hidden from the 365 GAL." -ForegroundColor Green
         $writeHostEntries += "$upn is hidden from the 365 GAL."
     } else {
@@ -75,10 +82,10 @@ foreach ($upn in $upnList) {
         $writeHostEntries += "$upn is not hidden from the 365 GAL."
     }
 }
-
 # Disconnect from Office 365
 Disconnect-ExchangeOnline -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 
 # Export Write-Host entries to a text file on the current user's desktop
-$writeHostEntries | Out-File -FilePath "$env:USERPROFILE\Desktop\HideToolLog.txt"
+New-Item -Path $env:USERPROFILE\Desktop\HideToolLog.txt -ItemType File -Force
+$writeHostEntries | Out-File -FilePath $env:USERPROFILE\Desktop\HideToolLog.txt -Append
 
