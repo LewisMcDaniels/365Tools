@@ -98,4 +98,3 @@ Disconnect-ExchangeOnline -ErrorAction SilentlyContinue -WarningAction SilentlyC
 # Export Write-Host entries to a text file on the current user's desktop
 New-Item -Path $env:USERPROFILE\Desktop\HideToolLog.txt -ItemType File -Force
 $writeHostEntries | Out-File -FilePath $env:USERPROFILE\Desktop\HideToolLog.txt -Append
-

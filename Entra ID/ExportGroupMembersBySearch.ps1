@@ -11,6 +11,7 @@ Import-Module -Name Microsoft.Graph.Groups
 Connect-MgGraph -Scopes "User.Read.All", "Group.Read.All" -NoWelcome 
 
 # Gets all groups by disaply name search, then use that list to get a list of all memembers of each.
+
 $groups = get-mggroup -All -ConsistencyLevel eventual -Search '"DisplayName:AY23"'
 $output = foreach ($group in $groups) {
     $groupId = $group.Id
