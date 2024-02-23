@@ -11,7 +11,7 @@ Connect-ExchangeOnline
 $Mailbox = Read-Host -Prompt "Enter mailbox name"
 $RetentionPolicy = Get-Mailbox $Mailbox | Select-Object -ExpandProperty RetentionPolicy
 $ArchiveStatus = Get-Mailbox $Mailbox | Select-Object -ExpandProperty ArchiveStatus
-$RetentionPolicySettings = Get-RetentionPolicy $RetentionPolicy
+$RetentionPolicySettings = Get-RetentionPolicy $RetentionPolicy  | Format-List
 
 # Check if retention policy is applied
 if ($RetentionPolicy) {
@@ -30,6 +30,3 @@ if ($ArchiveStatus -eq "Active") {
 } else {
     Write-Output "Archiving is not enabled on mailbox '$Mailbox'."
 }
-
-
-
