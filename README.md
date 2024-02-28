@@ -14,6 +14,7 @@ To use the tools in this repository, you will need to have the following prerequ
 - ExchangeOnlineManagement Powershell module
 - Microsoft.Graph.Intune Powershell Module
 - MSOnline Powershell Module
+- Az
 - Others may be required that are unlisted here, the tools should self install the modules if missing.
 
 Once you have the prerequisites installed, you can clone this repository to your local machine using the following command:
