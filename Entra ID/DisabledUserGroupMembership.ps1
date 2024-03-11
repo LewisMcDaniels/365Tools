@@ -12,7 +12,7 @@ Import-Module -Name Microsoft.Graph.Authentication
 # Connect to Microsoft Graph API
 Connect-MgGraph -Scopes "User.Read.All", "Group.Read.All" -noWelcome
 # Get all disabled users
-$disabledUsers = Get-MgUser -Filter "accountEnabled eq false"
+$disabledUsers = Get-MgUser -Filter "accountEnabled eq false" -ErrorAction SilentlyContinue
 
 # Create an empty array to store the results
 $results = @()
@@ -20,12 +20,12 @@ $results = @()
 # Iterate through each disabled user
 foreach ($user in $disabledUsers) {
     # Get the user's group memberships
-    $groupMemberships = Get-MgUserMemberOf -UserId $user.Id
+    $groupMemberships = Get-MgUserMemberOf -UserId $user.Id -ErrorAction SilentlyContinue
 
     # Iterate through each group membership
     foreach ($group in $groupMemberships) {
         # Get the group details
-        $groupDetails = Get-MgGroup -GroupId $group.Id
+        $groupDetails = Get-MgGroup -GroupId $group.Id -ErrorAction SilentlyContinue
 
         # Create a custom object with user and group details
         $result = [PSCustomObject]@{
