@@ -1,0 +1,1 @@
+get-service "adsync" | where {$_.Status -ne "Running"} | Start-Service
