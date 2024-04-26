@@ -13,7 +13,7 @@ Import-Module Microsoft.Graph.users
 # Connect to MS Graph
 Connect-MgGraph -Scopes "User.Read.All" -NoWelcome
 
-# Get all disabled users with licenses still applied
+# Get all users with licenses still applied
 $LicUsers = Get-MgUser  -All | 
 Where-Object {$_.AssignedLicenses.Count -gt 0} | 
 Select-Object -Property UserPrincipalName, DisplayName, AssignedLicenses
