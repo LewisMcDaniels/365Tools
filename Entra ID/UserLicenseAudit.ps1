@@ -19,5 +19,5 @@ Where-Object {$_.AssignedLicenses.Count -gt 0} |
 Select-Object -Property UserPrincipalName, DisplayName, AssignedLicenses
 
 # Output the disabled users with licenses to a CSV file
-Write-Host "Exporting disabled users with licenses to CSV file, see C:\UserLicenseAudit.csv" -ForegroundColor Green
+Write-Host "Exporting users with licenses to CSV file, see C:\UserLicenseAudit.csv" -ForegroundColor Green
 $LicUsers | Export-Csv -Path "C:\UserLicenseAudit.csv" -NoTypeInformation
