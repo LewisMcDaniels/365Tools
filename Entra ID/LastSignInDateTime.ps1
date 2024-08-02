@@ -1,4 +1,4 @@
-$requiredModules = @("Microsoft.Graph.Authentication")
+$requiredModules = @("Microsoft.Graph")
 
 foreach ($module in $requiredModules) {
     if (-not (Get-Module -ListAvailable -Name $module)) {
