@@ -6,7 +6,7 @@ foreach ($module in $requiredModules) {
     }
 }
 
-Import-Module -Name Microsoft.Graph.Authentication
+Import-Module -Name Microsoft.Graph.Authentication, Microsoft.Graph.users
 
 Connect-MgGraph -Scopes "User.Read.All" -NoWelcome
 
@@ -14,4 +14,4 @@ $users = Get-MgUser -all -Property DisplayName, SignInActivity, AccountEnabled, 
     Select-Object DisplayName, AccountEnabled, UserType -ExpandProperty SignInActivity | 
     Select-Object Displayname, lastSignInDateTime, LastNonInteractiveSignInDateTime, AccountEnabled, UserType
 
-$users | Export-Csv -Path "C:\LastsigninDataTime3.csv" -NoTypeInformation
+$users | Export-Csv -Path "C:\LastSigninTimes.csv" -NoTypeInformation
