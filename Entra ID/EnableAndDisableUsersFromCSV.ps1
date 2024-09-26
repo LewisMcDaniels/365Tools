@@ -60,6 +60,7 @@ switch ($option) {
         }
     }
     2 {
+        $users = Import-Csv -Path $csvPath
         Write-Host "Checking the current account status of each user in the CSV list..." -ForegroundColor Yellow
         foreach ($user in $users) {
             $userPrincipalName = $user.UserPrincipalName
