@@ -17,6 +17,20 @@ $nonPointPublishingSites = $sites | Where-Object {
     $_.Url -match "/sites/"
 }
 
+
+function Get-ValidCsvPath {
+    param (
+        [string]$promptMessage
+    )
+    do {
+        $csvPath = Read-Host -Prompt $promptMessage
+        if (-Not (Test-Path -Path $csvPath -PathType Leaf)) {
+            Write-Host "The file path is invalid or the file does not exist. Please try again." -ForegroundColor Red
+        }
+    } until (Test-Path -Path $csvPath -PathType Leaf)
+    return $csvPath
+}
+
 # List the current state of custom scripting on each site collection
 Write-Host "Custom Scripting State for All Site Collections:" -ForegroundColor Green
 foreach ($site in $nonPointPublishingSites) {
@@ -37,12 +51,17 @@ do {
     Write-Host "Select an option:" -ForegroundColor Cyan
     Write-Host "1. Enable custom scripting on all sites"
     Write-Host "2. Enable custom scripting on a specific site"
-    Write-Host "3. List the state of custom scripting on all site collections"
+    Write-Host "3. List the state of custom scripting on all SharePoint sites"
     write-host "4. Disable custom scripting on all sites"
     write-host "5. Disable custom scripting on a specific site"
+
+    Write-Host "CSV Options require the CSV file to have a column named 'SiteUrl'" -foregroundColor Yellow
+    Write-Host "6. Enable custom scripting on sites from CSV" 
+    Write-Host "7. Disable custom scripting on sites from CSV"
     Write-Host "0. Quit" -ForegroundColor Red
+
     
-    $option = Read-Host "Enter your choice (0-5)"
+    $option = Read-Host "Enter your choice (0-7)"
 
     switch ($option) {
         1 {
@@ -96,13 +115,43 @@ do {
                 Write-Host "Site not found: $siteUrl" -ForegroundColor Red
             }
         }
+        6 {
+            $csvPath = Get-ValidCsvPath -promptMessage "Please enter the path to your CSV file"
+            $sites = Import-Csv -Path $csvPath
+            Write-Host "Enabling custom scripting on sites from CSV..." -ForegroundColor Yellow
+            foreach ($site in $sites) {
+                $siteUrl = $site.SiteUrl
+                $site = Get-SPOSite -Identity $siteUrl -ErrorAction SilentlyContinue
+                if ($null -ne $site) {
+                    Set-SPOSite -Identity $siteUrl -DenyAddAndCustomizePages $false
+                    Write-Host "Enabled custom scripting on site: $siteUrl" -ForegroundColor Green
+                } else {
+                    Write-Host "Site not found: $siteUrl" -ForegroundColor Red
+                }
+            }
+        }
+        7 {
+            $csvPath = Get-ValidCsvPath -promptMessage "Please enter the path to your CSV file"
+            $sites = Import-Csv -Path $csvPath
+            Write-Host "Disabling custom scripting on sites from CSV..." -ForegroundColor Yellow
+            foreach ($site in $sites) {
+                $siteUrl = $site.SiteUrl
+                $site = Get-SPOSite -Identity $siteUrl -ErrorAction SilentlyContinue
+                if ($null -ne $site) {
+                    Set-SPOSite -Identity $siteUrl -DenyAddAndCustomizePages $true
+                    Write-Host "Disabled custom scripting on site: $siteUrl" -ForegroundColor Green
+                } else {
+                    Write-Host "Site not found: $siteUrl" -ForegroundColor Red
+                }
+            }
+        }
         0 {
             Write-Host "Quitting the script..." -ForegroundColor Red
             disconnect-sposervice
             Start-Sleep 10
         }
         default {
-            Write-Host "Invalid option. Please select a valid option (1-4)." -ForegroundColor Red
+            Write-Host "Invalid option. Please select a valid option (0-7)." -ForegroundColor Red
         }
     }
 } while ($option -ne 0)
