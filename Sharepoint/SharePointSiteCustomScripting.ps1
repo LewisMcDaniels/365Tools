@@ -4,6 +4,8 @@ Install-Module -Name Microsoft.Online.SharePoint.PowerShell -Force -AllowClobber
 # Import the SharePoint Online Management Shell module
 Import-Module -Name Microsoft.Online.SharePoint.PowerShell
 
+$errorActionPreference = 'SilentlyContinue'
+
 # Connect to SharePoint Online
 $SPOTenant = Read-Host "Enter the URL of your SharePoint Online tenant (e.g. https://contoso-admin.sharepoint.com)"
 Connect-SPOService -Url $SPOTenant
@@ -16,8 +18,6 @@ $nonPointPublishingSites = $sites | Where-Object {
     $_.Template -ne "POINTPUBLISHINGHUB" -and 
     $_.Url -match "/sites/"
 }
-
-
 function Get-ValidCsvPath {
     param (
         [string]$promptMessage
