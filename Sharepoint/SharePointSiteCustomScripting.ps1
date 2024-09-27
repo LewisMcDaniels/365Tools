@@ -30,20 +30,6 @@ function Get-ValidCsvPath {
     } until (Test-Path -Path $csvPath -PathType Leaf)
     return $csvPath
 }
-
-# List the current state of custom scripting on each site collection
-Write-Host "Custom Scripting State for All Site Collections:" -ForegroundColor Green
-foreach ($site in $nonPointPublishingSites) {
-    $siteUrl = $site.Url
-    $customScriptState = Get-SPOSite -Identity $siteUrl | Select-Object -ExpandProperty DenyAddAndCustomizePages
-    $customScriptStatus = if ($customScriptState -eq [Microsoft.Online.SharePoint.TenantAdministration.DenyAddAndCustomizePagesStatus]::Disabled) { "Allowed" } else { "Blocked" }
-    
-    Write-Output "Site URL: $siteUrl - Custom Script: $customScriptStatus"
-}
-
-Write-Host "Loading options" -ForegroundColor Green
-Write-Host
-
 do {
     write-host
     Write-Host
@@ -58,10 +44,11 @@ do {
     Write-Host "CSV Options require the CSV file to have a column named 'SiteUrl'" -foregroundColor Yellow
     Write-Host "6. Enable custom scripting on sites from CSV" 
     Write-Host "7. Disable custom scripting on sites from CSV"
+    write-host "8. Check status of custom scripting on all sites from the CSV"
     Write-Host "0. Quit" -ForegroundColor Red
 
     
-    $option = Read-Host "Enter your choice (0-7)"
+    $option = Read-Host "Enter your choice (0-8)"
 
     switch ($option) {
         1 {
@@ -145,13 +132,27 @@ do {
                 }
             }
         }
+        8 { $csvPath = Get-ValidCsvPath -promptMessage "Please enter the path to your CSV file"
+        $sites = Import-Csv -Path $csvPath
+        Write-Host "Checking the custom scripting state of sites from CSV..." -ForegroundColor Yellow
+        foreach ($site in $sites) {
+            $siteUrl = $site.SiteUrl
+            $site = Get-SPOSite -Identity $siteUrl -ErrorAction SilentlyContinue
+            if ($null -ne $site) {
+                $customScriptState = Get-SPOSite -Identity $siteUrl | Select-Object -ExpandProperty DenyAddAndCustomizePages
+                $customScriptStatus = if ($customScriptState -eq [Microsoft.Online.SharePoint.TenantAdministration.DenyAddAndCustomizePagesStatus]::Disabled) { "Allowed" } else { "Blocked" }
+                Write-Host "Custom scripting state: $siteUrl - Current State: $customScriptStatus" -ForegroundColor Green
+            } else {
+                Write-Host "Site not found: $siteUrl" -ForegroundColor Red
+            }}
+        }
         0 {
             Write-Host "Quitting the script..." -ForegroundColor Red
             disconnect-sposervice
             Start-Sleep 10
         }
         default {
-            Write-Host "Invalid option. Please select a valid option (0-7)." -ForegroundColor Red
+            Write-Host "Invalid option. Please select a valid option (0-8)." -ForegroundColor Red
         }
     }
 } while ($option -ne 0)
