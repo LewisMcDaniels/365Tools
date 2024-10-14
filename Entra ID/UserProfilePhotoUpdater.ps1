@@ -1,4 +1,7 @@
+# This works for firstname.lastname format. 
+# The photo file needs to be .png, .jpg, .jpeg.
 # Install required modules if not already installed
+
 $requiredModules = @("Microsoft.Graph.users")
 
 foreach ($module in $requiredModules) {
@@ -31,7 +34,7 @@ ForEach ($User in $Users) {
     $CheckCount += $ProgDelta
     $FullName = $User.GivenName + "." + $User.Surname
     $UserPhoto = $PhotoLocation + "\" + $FullName 
-    $UserPhotoExtensions = @(".png", ".jpg", ".jpeg", ".bmp")
+    $UserPhotoExtensions = @(".png", ".jpg", ".jpeg")
     $UserPhotoPath = $UserPhotoExtensions | Where-Object { Test-Path ($UserPhoto + $_) } | Select-Object -First 1
     if ($UserPhotoPath) {
         # Update the photo
