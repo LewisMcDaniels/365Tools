@@ -1,9 +1,9 @@
 # This works for firstname.lastname format. 
 # The photo file needs to be .png, .jpg, .jpeg.
+
+
 # Install required modules if not already installed
-
 $requiredModules = @("Microsoft.Graph.users")
-
 foreach ($module in $requiredModules) {
     if (-not (Get-Module -ListAvailable -Name $module)) {
         Install-Module -Name $module -Force
