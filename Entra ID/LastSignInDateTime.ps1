@@ -15,3 +15,4 @@ $users = Get-MgUser -all -Property DisplayName, SignInActivity, AccountEnabled, 
     Select-Object Displayname, lastSignInDateTime, LastNonInteractiveSignInDateTime, AccountEnabled, UserType
 
 $users | Export-Csv -Path "C:\LastSigninTimes.csv" -NoTypeInformation
+Write-Host "Exported to C:\LastSigninTimes.csv"
