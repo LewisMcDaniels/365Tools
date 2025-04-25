@@ -84,4 +84,3 @@ switch ($option) {
        Write-Host "An error occurred: $_" -ForegroundColor Red
    }
 }
-   
