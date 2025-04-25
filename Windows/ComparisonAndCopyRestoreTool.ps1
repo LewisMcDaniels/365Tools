@@ -4,6 +4,7 @@ It can also copy the missing files from restore directory to the live directory,
 
 $directory1 = Read-Host "Enter the path to the live directory"
 $directory2 = Read-Host "Enter the path to the restore directory"
+write-host "Comparing files in $directory1 and $directory2..." -ForegroundColor Yellow
 
 # Get all files from both directories recursively
 $files1 = Get-ChildItem -Path $directory1 -Recurse -File
