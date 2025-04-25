@@ -1,5 +1,5 @@
 # Define the two directories to compare for restore purposes when unknown data is missing.
-Write-Host "This script compares two directories and identifies files that are missing in one of them. 
+Write-Host "This script compares two directories and identifies files that are missing in one of them based on name only. 
 It also copies the missing files from one directory to another, preserving the folder structure." -ForegroundColor Green
 
 $directory1 = Read-Host "Enter the path to the live directory"
