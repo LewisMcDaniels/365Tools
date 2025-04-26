@@ -79,6 +79,9 @@ switch ($option) {
    }
    default {
        Write-Host "Invalid option. Please enter 1 or 9." -ForegroundColor Red
+    # Go back to the start of the switch options
+    $option = Read-Host "Enter your choice (1 or 9)"
+    continue
    } 
    catch {
        Write-Host "An error occurred: $_" -ForegroundColor Red
