@@ -1,6 +1,14 @@
 # 365Tools
 
-This repository contains a collection of tools and utilities for Microsoft 365.
+This repository contains a collection of tools and utilities for the following,
+
+- Microsoft 365
+- Entra ID
+- Azure
+- SharePoint
+- Veeam
+- Windows Server
+
 
 ## Description
 
