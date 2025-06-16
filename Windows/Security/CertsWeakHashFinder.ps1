@@ -1,4 +1,3 @@
-# List all certificates installed on the local machine affected by CVE-2019-35291
 $algorithms = @("md5RSA", "md2RSA", "sha1RSA", "md5ECDSA", "md2ECDSA", "sha1ECDSA")
 $results = @()
 
@@ -18,7 +17,7 @@ foreach ($algorithm in $algorithms) {
     }
 }
 
-# Export results to CSV
+
 $CSVpath = Read-Host "Enter the path to save the results to"
 $results | Export-Csv -Path $CSVpath -NoTypeInformation
 

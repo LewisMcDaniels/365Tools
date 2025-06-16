@@ -1,37 +1,28 @@
-# Ensure required modules are installed and imported
-$modules = @("Microsoft.Graph", "Microsoft.Online.SharePoint.PowerShell")
-foreach ($module in $modules) {
-    if (-not (Get-Module -ListAvailable -Name $module)) {
-        Install-Module -Name $module -Force -Scope CurrentUser
-    }
-    Import-Module $module -Force
-}
-# Connect to Microsoft 365 and SharePoint Online
-$SPOTenant = Read-Host "Enter your SharePoint Online tenant admin URL (e.g., https://<your-tenant>-admin.sharepoint.com)"
-Connect-MgGraph -Scopes "User.Read.All","Sites.Read.All"
-Connect-SPOService -Url $SPOTenant
-
-# Get all users with OneDrive provisioned
-$users = Get-SPOSite -IncludePersonalSite $true -Limit All | Where-Object { $_.Template -eq "SPSPERS" }
-
-# Prepare output array
-$results = @()
-
-foreach ($user in $users) {
-    $admins = Get-SPOUser -Site $user.Url | Where-Object { $_.IsSiteAdmin -eq $true }
-    foreach ($admin in $admins) {
-        $results += [PSCustomObject]@{
-            OneDriveUrl = $user.Url
-            UserPrincipalName = $user.Owner
-            AdminLogin = $admin.LoginName
-            AdminEmail = $admin.Email
-        }
-    }
+# Ensure required module is installed
+if (-not (Get-Module -ListAvailable -Name Microsoft.Online.SharePoint.PowerShell)) {
+  Install-Module -Name Microsoft.Online.SharePoint.PowerShell -Force -Scope CurrentUser
 }
 
-# Export results to CSV
-$results | Export-Csv -Path "OneDriveSiteAdmins.csv" -NoTypeInformation
+Import-Module Microsoft.Online.SharePoint.PowerShell
 
-# Disconnect sessions
-Disconnect-MgGraph
-Disconnect-SPOService
+# Connect to SharePoint Online (prompt for credentials)
+$adminUrl = Read-Host "Enter your SharePoint Online admin center URL (e.g., https://contoso-admin.sharepoint.com)"
+Connect-SPOService -Url $adminUrl
+
+# Get all OneDrive site collections (personal sites)
+$oneDriveSites = Get-SPOSite -Template "SPSPERS" -Limit All
+
+$results = foreach ($site in $oneDriveSites) {
+  # Get site admins
+  $admins = Get-SPOUser -Site $site.Url | Where-Object { $_.IsSiteAdmin -eq $true }
+  [PSCustomObject]@{
+    OneDriveUrl = $site.Url
+    SiteAdmins  = if ($admins) { ($admins | Select-Object -ExpandProperty LoginName) -join '; ' } else { "" }
+  }
+}
+
+# Export to CSV
+$csvPath = [System.IO.Path]::Combine([Environment]::GetFolderPath("Desktop"), "SiteCollectionAdmins.csv")
+$results | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8
+
+Write-Host "Export complete: $csvPath"
