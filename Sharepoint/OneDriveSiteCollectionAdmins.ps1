@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-if ($PSVersionTable.PSEdition -ne 'Desktop') { Write-Host 'Run this in Windows PowerShell ISE (Desktop 5.1).' ; return }
+if ($PSVersionTable.PSEdition -ne 'Desktop') { Write-Host 'Run this in Windows PowerShell Desktop 5.1.' ; return }
 if (Get-Module PnP.PowerShell -ErrorAction SilentlyContinue) { Remove-Module PnP.PowerShell -Force }
 if (-not (Get-Module -ListAvailable Microsoft.Online.SharePoint.PowerShell)) { Install-Module Microsoft.Online.SharePoint.PowerShell -Scope CurrentUser -Force }
 Import-Module Microsoft.Online.SharePoint.PowerShell -Force
